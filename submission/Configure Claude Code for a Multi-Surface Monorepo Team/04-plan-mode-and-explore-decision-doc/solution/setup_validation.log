@@ -1,0 +1,18 @@
+OK
+OK
+.claude/commands/review.md
+.claude/rules/react.md
+.claude/rules/tests.md
+.claude/rules/api.md
+.claude/standards/database.md
+.claude/standards/api.md
+.claude/standards/frontend.md
+.claude/standards/testing.md
+.claude/skills/deploy-check/SKILL.md
+.claude/commands/review.md:4:allowed-tools:
+.claude/commands/review.md:17:# /review — team PR review
+.claude/commands/review.md:130:- This command is project-scoped (`.claude/commands/review.md`) so everyone on the team gets the same review. If you want to layer personal preferences (e.g. a stricter accessibility check on your own PRs), put a `~/.claude/commands/review-strict.md` in your home directory — it will not affect teammates.
+.claude/commands/review.md:131:- If a finding requires running code or modifying files to verify, ask the author to run a specific check rather than attempting it from the review session. This command's `allowed-tools` are read-only by design.
+.claude/rules/tests.md:36:- New behavior requires at least one test covering the happy path and one covering an explicit edge case (empty input, max boundary, error state). PRs without both will be flagged by `/review`.
+.claude/skills/deploy-check/SKILL.md:6:allowed-tools:
+.claude/skills/deploy-check/SKILL.md:83:- It never pushes, deploys, or runs migrations. The `allowed-tools` allowlist is read-only by construction; even if a future maintainer adds `Write` here, the team's `/review` command should catch the change.
