@@ -56,6 +56,7 @@ This rule activates specifically for files under `src/api/`, while the React rul
 
 9. **Forked skill.** Quote the `context: fork` and `allowed-tools` lines. What does running forked + read-only buy you? What breaks without it?
    → `.claude/skills/deploy-check/SKILL.md` contains:
+
 ```yaml
 context: fork
 allowed-tools:
@@ -70,7 +71,10 @@ allowed-tools:
   - Bash(gh pr view:*)
   - Bash(gh pr checks:*)
 ```
-The fork keeps verbose discovery output out of the parent session and returns a concise pass/fail summary; the allowlist constrains the skill to inspection-oriented commands rather than arbitrary shell access or deployment. Without the fork, large file lists and git/PR output would pollute the main context; without the read-only allowlist, the check could accidentally gain mutation/deployment capabilities. The skill itself says it never modifies files, pushes, or deploys.
+
+The `context: fork` setting isolates the skill's execution context from the parent conversation, while `allowed-tools` restricts it to inspection-oriented operations. This prevents verbose discovery output from unnecessarily polluting the parent context and limits the skill's ability to modify files or perform deployment actions. 
+
+In my application-level implementation, `04-fork-scratchpad/solution/shift_monitor/fork.py`, `fork_for_hypothesis()` copies the baseline `hot_state.json` into a hypothesis-specific directory, so changes to that copy do not directly modify the original state file. The same module's `merge_findings()` function explicitly appends findings from fork scratchpads to the main scratchpad, providing a deliberate reintegration boundary. However, this is file-level isolation, not complete process isolation: reusing a hypothesis ID can overwrite its previous state, and merging does not currently deduplicate entries or resolve conflicts. Without the Claude Code fork, verbose output could consume the parent context; without the read-only allowlist, the skill could have unnecessarily broad permissions. Without application-level state copies and a controlled merge boundary, independent investigations could interfere through shared state or leave their findings without a defined reintegration path.
 
 10. **Scope.** From the validator output: project-level vs user-level scope. Give one example of each from this config.
     → The project-level example is the repository's `solution/CLAUDE.md` and its `.claude/rules/` files, which are versioned with the project and define shared conventions for API, React, and test files. The user-level example documented in the `04-plan-mode-and-explore-decision-doc/solution/CLAUDE.md` hierarchy is `~/.claude/`, suitable for personal preferences that should not be shared through version control. The source includes validator logic in `ecommerce_team_config/claude_md.py` and tests such as `tests/test_us01_claude_md_hierarchy.py`, but the ZIP does not include captured validator stdout; therefore I can cite the configured scope distinction and its tests, not claim a particular validator transcript.
